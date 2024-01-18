@@ -362,6 +362,34 @@ class Spotify:
 
         print("track saved")
 
+    def previous_playback(self, api_tokens, device_id = None):
+        self.oled.show_corner_dot(self.config['api_request_dot_size'])
+        r = spotify_api.previous_playback(api_tokens, device_id = device_id)
+        self.oled.hide_corner_dot(self.config['api_request_dot_size'])
+
+        self._validate_api_reply("next", r, ok_status_list = [202, 204, 404], warn_status_list = [0, 401, 403, 429])
+
+        if r['status_code'] == 404:
+            print("no active device found")
+            self.oled.show(_app_name, "no active device found", separator = False)
+            time.sleep(3)
+        else:
+            print("playback previous")        
+
+    def set_volume_playback(self, api_tokens, device_id = None, volume=100):
+        self.oled.show_corner_dot(self.config['api_request_dot_size'])
+        r = spotify_api.set_volume_playback(api_tokens, device_id = device_id, volume = volume)
+        self.oled.hide_corner_dot(self.config['api_request_dot_size'])
+
+        self._validate_api_reply("next", r, ok_status_list = [202, 204, 404], warn_status_list = [0, 401, 403, 429])
+
+        if r['status_code'] == 404:
+            print("no active device found")
+            self.oled.show(_app_name, "no active device found", separator = False)
+            time.sleep(3)
+        else:
+            print("set volume")
+       
     def _initial_token_request(self):
         import spotify_auth
         import machine

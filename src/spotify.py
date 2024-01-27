@@ -22,6 +22,8 @@ class Spotify:
 
     def __init__(self):
         self.device_id = None
+        self.available_devices = []  # Used to switch functionality
+        self.used_devices = []  # Used to switch functionality
         self.pause_after_current = False
         self._set_memory_debug()
         self.config = {}
@@ -57,6 +59,10 @@ class Spotify:
 
         self.button_playpause = button_async(Pin(self.config['pins']['button_playpause'], Pin.IN, Pin.PULL_UP), long_press_duration_ms = self.config['long_press_duration_milliseconds'], buzzer = self.buzzer)
         self.button_next = button_async(Pin(self.config['pins']['button_next'], Pin.IN, Pin.PULL_UP), long_press_duration_ms = self.config['long_press_duration_milliseconds'], buzzer = self.buzzer)
+        self.button_previous = button_async(Pin(self.config['pins']['button_previous'], Pin.IN, Pin.PULL_UP), long_press_duration_ms = self.config['long_press_duration_milliseconds'], buzzer = self.buzzer)
+        self.button_switch_device = button_async(Pin(self.config['pins']['button_switch_device'], Pin.IN, Pin.PULL_UP), long_press_duration_ms = self.config['long_press_duration_milliseconds'], buzzer = self.buzzer)
+        self.button_volume_down = button_async(Pin(self.config['pins']['button_volume_control'], Pin.IN, Pin.PULL_UP), long_press_duration_ms = self.config['long_press_duration_milliseconds'], buzzer = self.buzzer)
+
         print("buttons enabled")
 
         if self.config['setup_network']:
@@ -162,9 +168,12 @@ class Spotify:
     def _reset_button_presses(self):
         self.button_playpause.reset_press()
         self.button_next.reset_press()
+        self.button_previous.reset_press()
+        self.button_switch_device.reset_press()
+        self.button_volume_down.reset_press()
 
     def _check_button_presses(self):
-        if self.button_playpause.was_pressed() or self.button_next.was_pressed():
+        if self.button_playpause.was_pressed() or self.button_next.was_pressed() or self.button_previous.was_pressed() or self.button_switch_device.was_pressed() or self.button_volume_down.was_pressed():
             return True
         return False
 
@@ -208,7 +217,46 @@ class Spotify:
                 self.oled.show(_app_name, "requesting next", separator = False)
                 self._next_playback(api_tokens, self.device_id)
 
+        elif self.button_previous.was_pressed():
+            print("previous button pressed")
+            self.oled.show(_app_name, "requesting previous", separator = False)
+
+            if playing:
+                self._previous_playback(api_tokens)
+            else:
+                self._previous_playback(api_tokens, self.device_id)
+
+        elif self.button_switch_device.was_pressed():
+            print("switch button pressed")
+            self.oled.show(_app_name, "switch device", separator = False)
+
+            available_devices = self._get_available_devices(api_tokens)
+
+            if available_devices is not None:
+                if 'devices' in available_devices:
+                    all_used = True
+                    for device in available_devices['devices']:
+                        # Check if all devices were already used
+                        if device['id'] not in self.used_devices:
+                            all_used = False
+
+                    # reset used devices list if all used
+                    if all_used:
+                        self.used_devices.clear()
+
+                    for device in available_devices['devices']:
+                        if device['is_active']:
+                            self.used_devices.append(device['id'])
+                        else:
+                            # request to play on this device
+                            if device['id'] not in self.used_devices:
+                                self.used_devices.append(device['id'])
+                                self.oled.show(_app_name, f"use {device['name']}", separator=False)
+                                self._transfer_playback(api_tokens, device['id'])
+                                break
+
         self._reset_button_presses()
+
 
     def _validate_api_reply(self, api_call_name, api_reply, ok_status_list = [], warn_status_list = [], raise_status_list = [], warn_duration_ms = 5000):
         print("{} status received: {}".format(api_call_name, api_reply['status_code']))
@@ -362,12 +410,12 @@ class Spotify:
 
         print("track saved")
 
-    def previous_playback(self, api_tokens, device_id = None):
+    def _previous_playback(self, api_tokens, device_id = None):
         self.oled.show_corner_dot(self.config['api_request_dot_size'])
         r = spotify_api.previous_playback(api_tokens, device_id = device_id)
         self.oled.hide_corner_dot(self.config['api_request_dot_size'])
 
-        self._validate_api_reply("next", r, ok_status_list = [202, 204, 404], warn_status_list = [0, 401, 403, 429])
+        self._validate_api_reply("previous", r, ok_status_list = [202, 204, 404], warn_status_list = [0, 401, 403, 429])
 
         if r['status_code'] == 404:
             print("no active device found")
@@ -376,7 +424,31 @@ class Spotify:
         else:
             print("playback previous")        
 
-    def set_volume_playback(self, api_tokens, device_id = None, volume=100):
+    def _get_available_devices(self, api_tokens):
+        self.oled.show_corner_dot(self.config['api_request_dot_size'])
+        r = spotify_api.get_available_devices(api_tokens)
+        self.oled.hide_corner_dot(self.config['api_request_dot_size'])
+
+        self._validate_api_reply("available devices", r, ok_status_list = [200], warn_status_list = [0, 401, 403, 429])
+
+        if r['status_code'] == 404:
+            print("no active device found")
+            self.oled.show(_app_name, "no active device found", separator = False)
+            time.sleep(3)
+        else:
+            print("got devices")
+            return r['json']
+
+    def _transfer_playback(self, api_tokens, device_id = None):
+        self.oled.show_corner_dot(self.config['api_request_dot_size'])
+        r = spotify_api.transfer_playback(api_tokens, device_id)
+        self.oled.hide_corner_dot(self.config['api_request_dot_size'])
+
+        self._validate_api_reply("transfer playback", r, ok_status_list = [204], warn_status_list = [0, 401, 403, 429])
+
+        print("transfered playback")
+
+    def _set_volume_playback(self, api_tokens, device_id = None, volume=100):
         self.oled.show_corner_dot(self.config['api_request_dot_size'])
         r = spotify_api.set_volume_playback(api_tokens, device_id = device_id, volume = volume)
         self.oled.hide_corner_dot(self.config['api_request_dot_size'])
@@ -389,7 +461,7 @@ class Spotify:
             time.sleep(3)
         else:
             print("set volume")
-       
+                  
     def _initial_token_request(self):
         import spotify_auth
         import machine

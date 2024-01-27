@@ -128,6 +128,22 @@ def previous_playback(api_tokens, device_id = None):
 
     return _spotify_api_request("POST", spotify_player_api_url, headers = headers)
 
+
+def get_available_devices(api_tokens):
+    spotify_player_api_url = "{}/v1/me/player/devices".format(_spotify_api_base)
+    headers = { 'Authorization': "Bearer {}".format(api_tokens['access_token']) }
+
+    return _spotify_api_request("GET", spotify_player_api_url, headers = headers)
+
+
+def transfer_playback(api_tokens, device_id = None):
+    spotify_player_api_url = "{}/v1/me/player".format(_spotify_api_base)
+    headers = { 'Authorization': "Bearer {}".format(api_tokens['access_token']), 'Content-Type': 'application/json' }
+    if device_id is not None:
+        data = "{\"device_ids\":[\""+device_id+"\"]}"
+        return _spotify_api_request(method="PUT", url=spotify_player_api_url, data=data, headers = headers, retry=False)
+
+
 def set_volume_playback(api_tokens, device_id = None, target_volume=0):
     spotify_player_api_url = "{}/v1/me/player/volume?volume_percent={}".format(_spotify_api_base, target_volume)
     headers = { 'Authorization': "Bearer {}".format(api_tokens['access_token']) }
@@ -135,6 +151,7 @@ def set_volume_playback(api_tokens, device_id = None, target_volume=0):
         spotify_player_api_url += "?device_id={}".format(device_id)
 
     return _spotify_api_request("POST", spotify_player_api_url, headers = headers)
+
 
 def save_track(api_tokens, track_id):
     spotify_me_api_url = "{}/v1/me/tracks?ids={}".format(_spotify_api_base, track_id)

@@ -25,6 +25,9 @@
 		"sda": 23,
 		"button_playpause": 17,
 		"button_next": 5,
+		"button_previous": 16,
+		"button_switch_device": 4,
+		"button_volume_control": 0,
 		"buzzer": 27
 	},
 	"wlan": {

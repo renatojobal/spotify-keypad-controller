@@ -144,13 +144,11 @@ def transfer_playback(api_tokens, device_id = None):
         return _spotify_api_request(method="PUT", url=spotify_player_api_url, data=data, headers = headers, retry=False)
 
 
-def set_volume_playback(api_tokens, device_id = None, target_volume=0):
-    spotify_player_api_url = "{}/v1/me/player/volume?volume_percent={}".format(_spotify_api_base, target_volume)
+def set_volume_playback(api_tokens, volume=0):
+    spotify_player_api_url = f"{_spotify_api_base}/v1/me/player/volume?volume_percent={volume}"
     headers = { 'Authorization': "Bearer {}".format(api_tokens['access_token']) }
-    if device_id is not None:
-        spotify_player_api_url += "?device_id={}".format(device_id)
 
-    return _spotify_api_request("POST", spotify_player_api_url, headers = headers)
+    return _spotify_api_request("PUT", spotify_player_api_url, headers = headers)
 
 
 def save_track(api_tokens, track_id):

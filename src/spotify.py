@@ -15,6 +15,7 @@ import oled
 import spotify_api
 from buttonpress_async import button_async
 from buzzer import buzzer
+from potenciometer_async import potenciometer_async
 
 _app_name = const("Spotify status")
 
@@ -61,7 +62,7 @@ class Spotify:
         self.button_next = button_async(Pin(self.config['pins']['button_next'], Pin.IN, Pin.PULL_UP), long_press_duration_ms = self.config['long_press_duration_milliseconds'], buzzer = self.buzzer)
         self.button_previous = button_async(Pin(self.config['pins']['button_previous'], Pin.IN, Pin.PULL_UP), long_press_duration_ms = self.config['long_press_duration_milliseconds'], buzzer = self.buzzer)
         self.button_switch_device = button_async(Pin(self.config['pins']['button_switch_device'], Pin.IN, Pin.PULL_UP), long_press_duration_ms = self.config['long_press_duration_milliseconds'], buzzer = self.buzzer)
-        self.button_volume_down = button_async(Pin(self.config['pins']['button_volume_control'], Pin.IN, Pin.PULL_UP), long_press_duration_ms = self.config['long_press_duration_milliseconds'], buzzer = self.buzzer)
+        self.button_volume_control = potenciometer_async(self.config['pins']['potentiometer_volume_control'])
 
         print("buttons enabled")
 
@@ -170,10 +171,10 @@ class Spotify:
         self.button_next.reset_press()
         self.button_previous.reset_press()
         self.button_switch_device.reset_press()
-        self.button_volume_down.reset_press()
+        self.button_volume_control.reset_press()
 
     def _check_button_presses(self):
-        if self.button_playpause.was_pressed() or self.button_next.was_pressed() or self.button_previous.was_pressed() or self.button_switch_device.was_pressed() or self.button_volume_down.was_pressed():
+        if self.button_playpause.was_pressed() or self.button_next.was_pressed() or self.button_previous.was_pressed() or self.button_switch_device.was_pressed() or self.button_volume_control.was_pressed():
             return True
         return False
 
@@ -254,6 +255,16 @@ class Spotify:
                                 self.oled.show(_app_name, f"use {device['name']}", separator=False)
                                 self._transfer_playback(api_tokens, device['id'])
                                 break
+
+        elif self.button_volume_control.was_pressed():
+            print("volume control change")
+            target_volume = self.button_volume_control.pot_value
+            if playing:
+                self.oled.show(_app_name, f"volume {target_volume}", separator=False)
+                self._set_volume_playback(api_tokens, target_volume)
+
+            else:
+                self.oled.show(_app_name, "no active device", separator = False)
 
         self._reset_button_presses()
 
@@ -448,12 +459,12 @@ class Spotify:
 
         print("transfered playback")
 
-    def _set_volume_playback(self, api_tokens, device_id = None, volume=100):
+    def _set_volume_playback(self, api_tokens, volume=100):
         self.oled.show_corner_dot(self.config['api_request_dot_size'])
-        r = spotify_api.set_volume_playback(api_tokens, device_id = device_id, volume = volume)
+        r = spotify_api.set_volume_playback(api_tokens, volume = volume)
         self.oled.hide_corner_dot(self.config['api_request_dot_size'])
 
-        self._validate_api_reply("next", r, ok_status_list = [202, 204, 404], warn_status_list = [0, 401, 403, 429])
+        self._validate_api_reply("volume control", r, ok_status_list = [204], warn_status_list = [0, 401, 403, 429])
 
         if r['status_code'] == 404:
             print("no active device found")

@@ -24,8 +24,8 @@
 		"scl": 18,
 		"sda": 23,
 		"button_playpause": 17,
-		"button_next": 5,
-		"button_previous": 16,
+		"button_next": 16,
+		"button_previous": 5,
 		"button_switch_device": 4,
 		"potentiometer_volume_control": 34,
 		"buzzer": 27

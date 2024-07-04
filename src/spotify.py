@@ -62,7 +62,10 @@ class Spotify:
         self.button_next = button_async(Pin(self.config['pins']['button_next'], Pin.IN, Pin.PULL_UP), long_press_duration_ms = self.config['long_press_duration_milliseconds'], buzzer = self.buzzer)
         self.button_previous = button_async(Pin(self.config['pins']['button_previous'], Pin.IN, Pin.PULL_UP), long_press_duration_ms = self.config['long_press_duration_milliseconds'], buzzer = self.buzzer)
         self.button_switch_device = button_async(Pin(self.config['pins']['button_switch_device'], Pin.IN, Pin.PULL_UP), long_press_duration_ms = self.config['long_press_duration_milliseconds'], buzzer = self.buzzer)
-        self.button_volume_control = potenciometer_async(self.config['pins']['potentiometer_volume_control'])
+        if self.config['use_potentiometer']:
+            self.button_volume_control = potenciometer_async(self.config['pins']['potentiometer_volume_control'], enable = True)
+        else:
+            self.button_volume_control = potenciometer_async(self.config['pins']['potentiometer_volume_control'], enable = False)
 
         print("buttons enabled")
 

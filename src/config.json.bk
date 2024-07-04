@@ -1,5 +1,6 @@
 {
 	"use_led": false,
+	"use_potentiometer": true,
 	"use_buzzer": true,
 	"use_display": true,
 	"setup_network": true,

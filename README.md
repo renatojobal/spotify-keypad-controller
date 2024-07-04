@@ -1,6 +1,7 @@
-# micropython-spotify-status-display
+# spotify-keypad-controller
+> Forked from https://github.com/vergoh/micropython-spotify-status-display
 
-MicroPython implementation for ESP32 using a small OLED display to show the "currently playing" information of a Spotify playback device. Two buttons can optionally be added for controlling the playback device. For intended usability, having the buttons is highly recommended.
+MicroPython implementation for ESP32 using a small OLED display to show the "currently playing" information of a Spotify playback device. The display, buttons, or the potentiometer can be added as per your preference. For intended usability, having the buttons is highly recommended.
 
 ![2.42" OLED in 3D printed case](images/2_42inch_oled_in_case.jpg)
 
@@ -10,50 +11,54 @@ MicroPython implementation for ESP32 using a small OLED display to show the "cur
   - artist + track
   - show/podcast + episode
 - playback control (optional)
+  - previous track 
   - play / pause
   - next track
   - pause after current track
   - add current track to library
-- configurable poll interval and behaviour
-- access token stored in device after initial login
+  - switch device playing
+- configurable poll interval and behavior
+- access token stored in the device after initial login
 - buzzer (optional) for confirming button presses
 - screensaver for standby mode
-- self contained implementation
+- self-contained implementation
 - [custom 3D printable case](stl/case.stl) with [lid](stl/lid.stl)
 
 ## Requirements
 
 - ESP32 with [MicroPython](https://micropython.org/) 1.14 or later
   - version 1.18 or later recommended
-- SSD1306 or SSD1309 compatible 128x64 pixel OLED display in i2c mode
-  - optional if buttons are only needed / used
-  - verified
-    - [0.96" SSD1306](https://www.google.com/search?q=128x64+oled+i2c+0.96+ssd1306)
-    - [2.42" SSD1309](https://www.google.com/search?q=128x64+oled+i2c+2.42+ssd1309) (recommended)
-  - most likely ok
+- SSD1306, SSD1309, or SSD1315 compatible 128x64 pixel OLED display in I2C mode
+  - [0.96" SSD1306](https://www.google.com/search?q=128x64+oled+i2c+0.96+ssd1306)
+  - [0.96" SSD1315](https://www.google.com/search?q=128x64+oled+i2c+0.96+ssd1315)
+  - [2.42" SSD1309](https://www.google.com/search?q=128x64+oled+i2c+2.42+ssd1309) (recommended)
+  - most likely okay
     - [1.3" SSD1306](https://www.google.com/search?q=128x64+oled+i2c+1.3+ssd1306)
   - not verified
     - [1.3" SH1106](https://www.google.com/search?q=128x64+oled+i2c+1.3+sh1106)
-- wlan connectivity
+- [4 Cherry MX switches](https://www.google.com/search?q=cherry%20mx%20switch)
+- [4 keycaps](https://www.google.com/search?q=cherry%20mx%20switch%20keycaps)
+- 1 10k potentiometer
+- WLAN connectivity
 - Spotify account
   - Premium needed for playback control
 - control buttons (optional)
 - buzzer (optional)
 
-See also beginning of [Case.md](Case.md) for a full list of needed components for building the cased solution shown above.
+See also the beginning of [Case.md](Case.md) for a full list of needed components for building the cased solution shown above.
 
 ## Limitations
 
-- buttons don't react during api requests / server communication
-- buttons require Spotify Premium due to api restrictions
-- default font supports mainly us-ascii characters
-  - unsupported western characters are however automatically mapped to closest us-ascii equivalents
-- playback device isn't aware of the status display resulting in delayed status changes when the playback device is directly controlled
+- buttons don't react during API requests / server communication
+- buttons require Spotify Premium due to API restrictions
+- default font supports mainly US-ASCII characters
+  - unsupported Western characters are, however, automatically mapped to the closest US-ASCII equivalents
+- playback device isn't aware of the status display, resulting in delayed status changes when the playback device is directly controlled
 
 ## TODO
 
-- better handling of rare cases of `ECONNABORTED` followed with `EHOSTUNREACH` which gets displayed
-- async api requests / server communication (if possible)
+- better handling of rare cases of `ECONNABORTED` followed by `EHOSTUNREACH` which gets displayed
+- async API requests / server communication (if possible)
 
 ## Building it
 
@@ -62,11 +67,13 @@ See also beginning of [Case.md](Case.md) for a full list of needed components fo
 
 ## Controls
 
-| | Left button | Right button |
-| --- | --- | --- |
-| active, short press | play / pause / resume | next track |
-| active, long press | save track | pause after current track |
-| standby | wake up and resume playback | wake up |
+| | active, short press | active, long press | standby | 
+| --- | --- | --- | --- |
+| previous button | previous track | | | 
+| stop button | play / pause / resume | save track | wake up and resume playback | 
+| next button | next track | pause after current track | wake up |
+| switch button | switch playing to another available device | | |
+| potentiometer | volume control (when available) | | |
 
 Long press is >= 500 ms by default.
 

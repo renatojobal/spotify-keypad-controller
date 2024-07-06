@@ -1,7 +1,7 @@
 # Wiring
 
 See the live scheme here:
-https://www.flux.ai/renatojobal/spostatusopensource?editor=schematic
+https://www.flux.ai/renatojobal/spomacropadopensource?editor=schematic
 Example connections for "Lolin32 Lite" pins using a SSD1306 based OLED. Pins may vary on other ESP32 boards. For case build, see [Case.md](Case.md).
 
 ![Wiring Diagram](images/wiring.jpg)

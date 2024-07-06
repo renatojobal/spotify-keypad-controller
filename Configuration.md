@@ -5,8 +5,8 @@
 1. Login do [Spotify developer dashboard](https://developer.spotify.com/dashboard/login)
 2. Select "Create an app"
 3. Fill "Status display" or similar as app name, description can be a link to this project or anything else
-4. Click "Edit setting" and add `http://spostatus.local/callback/` as "Redirect URI"
-   - `spostatus` needs to match the `mdns` name configured in the next section
+4. Click "Edit setting" and add `http://spomacropad.local/callback/` as "Redirect URI"
+   - `spomacropad` needs to match the `mdns` name configured in the next section
    - `http://` prefix and `.local/callback/` must remain as shown
 5. Save the settings dialog
 6. Click "Show client secret" and take note of both "Client ID" and "Client Secret"

@@ -22,7 +22,7 @@ MicroPython implementation for ESP32 using a small OLED display to show the "cur
 - buzzer (optional) for confirming button presses
 - screensaver for standby mode
 - self-contained implementation
-- [custom 3D printable case](stl/case.stl) or custimze the model in [Thinkercad](https://www.tinkercad.com/things/2gLBOgj0QfW-spostatus)
+- [custom 3D printable case](stl/case.stl) or custimze the model in [Thinkercad](https://www.tinkercad.com/things/2gLBOgj0QfW-spomacropad)
 
 ## Requirements
 

@@ -3,7 +3,7 @@
 
 MicroPython implementation for ESP32 using a small OLED display to show the "currently playing" information of a Spotify playback device. The display, buttons, or the potentiometer can be added as per your preference. For intended usability, having the buttons is highly recommended.
 
-![2.42" OLED in 3D printed case](images/2_42inch_oled_in_case.jpg)
+![Product finished](images/product_finished.jpg)
 
 ## Features
 
@@ -22,16 +22,17 @@ MicroPython implementation for ESP32 using a small OLED display to show the "cur
 - buzzer (optional) for confirming button presses
 - screensaver for standby mode
 - self-contained implementation
-- [custom 3D printable case](stl/case.stl) with [lid](stl/lid.stl)
+- [custom 3D printable case](stl/case.stl) or custimze the model in [Thinkercad](https://www.tinkercad.com/things/2gLBOgj0QfW-spostatus)
 
 ## Requirements
 
 - ESP32 with [MicroPython](https://micropython.org/) 1.14 or later
   - version 1.18 or later recommended
+  - (I had problems with version 1.22, but 1.21 works fine)
 - SSD1306, SSD1309, or SSD1315 compatible 128x64 pixel OLED display in I2C mode
   - [0.96" SSD1306](https://www.google.com/search?q=128x64+oled+i2c+0.96+ssd1306)
-  - [0.96" SSD1315](https://www.google.com/search?q=128x64+oled+i2c+0.96+ssd1315)
-  - [2.42" SSD1309](https://www.google.com/search?q=128x64+oled+i2c+2.42+ssd1309) (recommended)
+  - [0.96" SSD1315](https://www.google.com/search?q=128x64+oled+i2c+0.96+ssd1315) (used in the images)
+  - [2.42" SSD1309](https://www.google.com/search?q=128x64+oled+i2c+2.42+ssd1309)
   - most likely okay
     - [1.3" SSD1306](https://www.google.com/search?q=128x64+oled+i2c+1.3+ssd1306)
   - not verified

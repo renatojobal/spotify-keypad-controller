@@ -11,6 +11,8 @@ class potenciometer_async():
         if enable is False:
             self.enabled = False
             return
+        else: 
+            self.enabled = True
         self.pin = buttonpin
 
         self.pot = ADC(Pin(buttonpin))

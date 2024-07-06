@@ -1,7 +1,7 @@
 # spotify-keypad-controller
 > Forked from https://github.com/vergoh/micropython-spotify-status-display
 
-MicroPython implementation for ESP32 using a small OLED display to show the "currently playing" information of a Spotify playback device. The display, buttons, or the potentiometer can be added as per your preference. For intended usability, having the buttons is highly recommended.
+The Spomacropad is a MicroPython implementation for ESP32, featuring a small OLED display to show the "currently playing" information of a Spotify playback device. You can customize it by adding a display, buttons, or a potentiometer according to your preference. For optimal usability, it is highly recommended to include the buttons.
 
 ![Product finished](images/product_finished.jpg)
 
